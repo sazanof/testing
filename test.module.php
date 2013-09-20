@@ -2,8 +2,8 @@
 /*
 # MODX TESTING MODULE
 # AUTHOR SAZANOF siuzi_drum@mail.ru
-# VERSION 0.1.0
-# 04.04.2013
+# VERSION 1.b3
+# --.--.2013
 
 */
 
