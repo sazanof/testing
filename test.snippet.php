@@ -146,7 +146,7 @@ if ($_GET['act'] =='go' and $_GET['quest'])
 					$num = $i+1;
 					$question = $res['question'];
 					$answ = $res['json_answ'];
-					$answ = explode(';',$answ);
+					$answ = explode('&impl;',$answ);
 					$ii=1;
 					$sql = "SELECT * FROM $start_table WHERE session_id = '$sess_id'";
 					$result = $modx->db->makeArray($modx->db->query($sql));
@@ -347,7 +347,7 @@ if ($_GET['act'] =='end')
 					{
 						$str_arr = $res_res[($key-1)];
 						$qarr = $res_res[($key-1)]['json_answ'];
-						$qarr = explode (';',$qarr);
+						$qarr = explode ('&impl;',$qarr);
 						$str = json_decode($qarr[($res_res[($key-1)]['correct_answ']-1)],true);
 						$results .= "Вопрос:<br><b style=\"color:red\">".$res_res[($key-1)]['question']."</b><br>";
 						$results .= "<b style=\"color:red\">Нет ответа</b><br>Правильный ответ: ".$str['answer'].'<br><hr>';
@@ -356,7 +356,7 @@ if ($_GET['act'] =='end')
 					{
 						$str_arr = $res_res[($key-1)];
 						$qarr = $res_res[($key-1)]['json_answ'];
-						$qarr = explode (';',$qarr);
+						$qarr = explode ('&impl;',$qarr);
 						$str = json_decode($qarr[($res_res[($key-1)]['correct_answ']-1)],true);	
 							
 						$results .= "Вопрос:<br><b style=\"color:orange\">".$res_res[($key-1)]['question'].'</b><br>'; 
