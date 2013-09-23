@@ -1,4 +1,4 @@
-testing
+MODxTesting
 =======
 Testing module and snippet for MODx Evolution
 
