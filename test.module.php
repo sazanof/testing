@@ -57,6 +57,18 @@ if(IN_MANAGER_MODE=="true")
 						PRIMARY KEY ( `id` )
 						)";
 		$modx->db->query($sql5);
+		if(file_exists($mod_path.'sql.inst'))
+		{
+			$instDemo = file($mod_path.'sql.inst');
+			$instDemo = str_replace ('{PERFIX}',$dbprefix,$instDemo);
+			foreach ($instDemo as $inst)
+			{
+				if ($inst!=='')
+				$modx->db->query($inst);
+			}
+		}
+		header('Location:'.$m_url);
+		//$modx->db->query($instDemo);
 		break;
 		case 'edit_questions':
 		$title = 'Список вопросов теста';
