@@ -112,7 +112,6 @@ fieldset {margin-bottom:10px !important}
     border-top: 1px solid #fff;
     background-color: #f1f1f1;  padding:15px !important
 }
-
 .zebra tfoot td:first-child {
     -moz-border-radius: 0 0 0 6px;
     -webkit-border-radius: 0 0 0 6px;
@@ -124,7 +123,6 @@ fieldset {margin-bottom:10px !important}
     -webkit-border-radius: 0 0 6px 0;
     border-radius: 0 0 6px 0;
 }  
-
 .test_type {background:#ffe9d1}
 
 .balls_type {background:#cee8ff}
