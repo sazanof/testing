@@ -2,10 +2,12 @@ testing
 =======
 Testing module and snippet for MODx Evolution
 
-Update
+Update 23.09.2013
+====
 
 Module
-- added test type choice
+- добавлен выбор типа тестирования (на проверку знаний или тестирование на общее кол-во баллов)
+- добавлена возможность указать минимальное количество баллов для прохождения тестирования
 
 Snippet
-- added an image output
+- добавлен вывод изображения в плейсхолдер

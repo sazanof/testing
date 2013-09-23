@@ -265,8 +265,6 @@ if ($_POST['game_over'])
 if ($_GET['act'] =='end')
 {
 	$qTpl='';
-	$good = isset($good) ? $good : 5;
-
 	$results = '<h1>'.$lang[4].'</h1>';
 	$sql = "SELECT * FROM $start_table WHERE session_id = '$sess_id'";
 	if($modx->db->getRecordCount($modx->db->query($sql)) > 0)
@@ -278,7 +276,6 @@ if ($_GET['act'] =='end')
 		}
 		else
 		{
-			//print_r($res['questions_id']);
 			$res2 = explode (',',$result[0]['answers']);
 			foreach ($res as $key => $value) 
 			{
@@ -315,7 +312,8 @@ if ($_GET['act'] =='end')
 				$row = $modx->db->getRow($modx->db->query($sql));
 				$results .= '<div style="padding:10px; margin:10px 0; background:#ddd"><h1>'.$row['title'].'</h1>';
 				$results .= str_replace('[+balls+]',$balls,$row['descr']).'</div>';
-				if ($balls >= $good)
+				// сравниваем с минимальным допустимым указанным числом баллов
+				if ($balls >= $row['min_balls'])
 				{
 					$results .= $lang[8];
 				}

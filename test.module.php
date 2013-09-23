@@ -34,7 +34,7 @@ if(IN_MANAGER_MODE=="true")
 		$title = 'Установка модуля';		
 		$sql = "CREATE TABLE $mod_table (id INT(11) NOT NULL AUTO_INCREMENT, id_theme INT(11),question VARCHAR(255),img VARCHAR(255), json_answ TEXT, correct_answ INT(2), PRIMARY KEY (id))";
 		$modx->db->query($sql);
-		$sql2 = "CREATE TABLE IF NOT EXISTS $mod_table_th ( `id` int(11) NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `description` TEXT NOT NULL, `test_type` INT NOT NULL, `time` INT NOT NULL, PRIMARY KEY (`id`)) ";
+		$sql2 = "CREATE TABLE IF NOT EXISTS $mod_table_th ( `id` int(11) NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `description` TEXT NOT NULL, `test_type` INT NOT NULL, `time` INT NOT NULL, `min_balls` INT NOT NULL, PRIMARY KEY (`id`)) ";
 		$modx->db->query($sql2);		
 		$sql3="CREATE TABLE $start_table (`id` INT(9) NOT NULL AUTO_INCREMENT ,`session_id` VARCHAR(255) NOT NULL ,`time_death` VARCHAR(255) NOT NULL ,`questions_id` TEXT NOT NULL ,`answers` TEXT NOT NULL, `num` INT(9),PRIMARY KEY ( `id` )) ";
 		$modx->db->query($sql3);
@@ -202,7 +202,7 @@ if(IN_MANAGER_MODE=="true")
 		{
 			if($_POST['add_questions'])
 			{
-				$sql = "INSERT INTO $mod_table_th VALUES ('NULL','".$modx->db->escape($_POST['theme_title'])."','".$modx->db->escape($_POST['theme_description'])."','".$modx->db->escape($_POST['test_type'])."','".$modx->db->escape($_POST['test_time'])."'";
+				$sql = "INSERT INTO $mod_table_th VALUES ('NULL','".$modx->db->escape($_POST['theme_title'])."','".$modx->db->escape($_POST['theme_description'])."','".$modx->db->escape($_POST['test_type'])."','".$modx->db->escape($_POST['test_time'])."','0'";
 				//echo $sql;
 				$modx->db->query($sql);
 				header("Location: index.php?a=112&id=".$_REQUEST['id']." ");
@@ -223,6 +223,7 @@ if(IN_MANAGER_MODE=="true")
 				<input type="radio" name="test_type" value="0"> Тестирование (Результат по сумме набранных баллов)<br>
 				<b>Введите время, отведенное для теста в минутах.</b><br>
 				<input type="text" name="test_time" value="0"><br>
+				<div class="info" style="margin-top:7px">Сохранив тему, Вы сможете задать минимальное количество правильных набранных баллов для тестирования.</div>
 				<input type="submit" name="add_questions" value="Сохранить" class="but"> <input type="reset" value="Назад" onclick="javascript:history.back();" class="but">
 				</form></fieldset>';
 				$out .= $form;
@@ -254,7 +255,7 @@ if(IN_MANAGER_MODE=="true")
 					{
 						if ((int)($_POST['max']) and $_POST['result'] !=='')
 						{
-							$out .= 'good';
+							//$out .= 'good';
 							$sql = "INSERT INTO $tbl_results (id,id_test,min,max,res) VALUES (NULL, '".$modx->db->escape($_GET['theme_id'])."', '".$modx->db->escape($_POST['min'])."','".$modx->db->escape($_POST['max'])."', '".$modx->db->escape($_POST['result'])."')";
 							if ($modx->db->query($sql))
 							{
@@ -438,6 +439,7 @@ if(IN_MANAGER_MODE=="true")
 					'<input type="radio" name="test_type" value="1" checked>'.$test_type_checked.' Проверка знаний (баллы начисляются за правильный ответ)<br>
 					<input type="radio" name="test_type" value="0">'.$test_type_checked.' Тестирование (Результат по сумме набранных баллов)<br>';
 				}
+				// редактирование темы
 				$form = '
 				<fieldset><legend>Редактирование темы с ID ='.$_GET['theme_id'].'</legend>
 					<form method="post" action="">
@@ -446,12 +448,27 @@ if(IN_MANAGER_MODE=="true")
 					<b>Описание темы:</b><br>
 					<textarea name="theme_description" placeholder="Введите описание теста">'.$res['description'].'</textarea>
 					</fieldset>
-					
 					<fieldset>
 					'.$test_type_checked.'
-					<b>Введите время, отведенное для теста в минутах.</b><br>
-					<input type="text" name="test_time" value="'.$res['time'].'"><br>
 					</fieldset>
+					<fieldset>
+					<b>Введите время, отведенное для теста в минутах.</b><br>
+					<input type="text" name="test_time" value="'.$res['time'].'"><br>';
+					//print_r($res);
+					if ($res['test_type']==1) 
+					{
+						$balsChk = "SELECT COUNT(*) FROM $mod_table WHERE id_theme='".$_GET['theme_id']."'";
+						$balsChk = $modx->db->getRow($modx->db->query($balsChk));
+						//print_r($balsChk);
+						$form .= '<b>Введите минимальное кол-во баллов, но не больше <span style="color:red">'.$balsChk['COUNT(*)'].'</span><br>
+						набрав которые, тест будет зачтен посетителю.</b><br>
+						<input type="text" name="min_balls" value="'.$res['min_balls'].'"><br>';
+					}
+					else
+					{
+						$form .= '<b style="color:#ddd">Выбор минимального количества правильных ответов неактивен</b><br>';
+					}
+					$form.='</fieldset>
 					
 					<fieldset>
 					<input type="submit" name="save_post" value="Сохранить изменения" class="but"> <input type="reset" value="Назад" onclick="javascript:history.back();" class="but">
@@ -464,6 +481,7 @@ if(IN_MANAGER_MODE=="true")
 					title='".$modx->db->escape($_POST['theme_title'])."',
 					test_type='".$modx->db->escape($_POST['test_type'])."',
 					time='".$modx->db->escape(trim($_POST['test_time']))."',
+					min_balls='".$modx->db->escape(trim((int)$_POST['min_balls']))."',
 					description='".$modx->db->escape($_POST['theme_description'])."' WHERE id = '".$res['id']."'";
 					$modx->db->query($sql);
 					header("Location: index.php?a=112&id=".$_REQUEST['id']."&theme_id=".(int)$_GET['theme_id']);
