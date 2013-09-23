@@ -595,7 +595,7 @@ if(IN_MANAGER_MODE=="true")
 			{
 				$j_row = $res['json_answ'];
 				$j = array();
-				$j = explode (';',$j_row);
+				$j = explode ('&impl;',$j_row);
 				
 				$i = 0;
 				$imgs = array();
@@ -702,7 +702,7 @@ if(IN_MANAGER_MODE=="true")
 				}
 				$q_title = $modx->db->escape($_POST['q_title']);
 				$q_title = str_replace('"','&quot;',$q_title);
-				$json_string = implode(';',$json_string);
+				$json_string = implode('&impl;',$json_string);
 				if (!$res)
 				{
 					$sql = "INSERT INTO $mod_table VALUES ('NULL','".(int)$_GET['theme']."','".$q_title."','".$modx->db->escape($_POST['img'])."','".$modx->db->escape($json_string)."','".$modx->db->escape((int)$_POST['correct_answer'])."')";
