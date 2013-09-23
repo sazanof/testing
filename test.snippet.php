@@ -4,42 +4,43 @@
 # AUTHOR SAZANOF siuzi_drum@mail.ru
 # VERSION 0.1.0
 # 04.04.2013
-
-ALTER TABLE `modx3_test_started` ADD `id_th` INT NOT NULL AFTER `answers` 
-
 */
 session_start();
+	// lang parameter
 $lang = isset($lang) ? $lang : 'ru';
 include (MODX_BASE_PATH.'assets/modules/testing/lang/lang.'.$lang.'.php');
-
-	//
-$container = isset($container) ? $modx->getChunk($container) : '<div class="time_ost">[+time+]</div>[+results+][+listing+]<div class="quests">[+wrapper+]</div>';
+	//	main container
+$containerTpl = isset($containerTpl) ? $modx->getChunk($containerTpl) : '<div class="time_ost">[+time+]</div>[+results+][+listing+]<div class="quests">[+wrapper+]</div>';
 	// links to questions tpl
 $listingTpl = isset($listingTpl) ? $modx->getChunk($listingTpl) : '<div class="questions"><ul>[+links+]</ul></div>';
 	// question chunk
 $qTpl = isset($qTpl) ? $modx->getChunk($qTpl) : '
 	<div class="quest">
-		<span class="q_text"><b>[+question+]</b> ('.$lang[0].'[+num+])</span>
-		<form method="post" action="'.$modx->makeUrl($modx->documentIdentifier).'?act=go&quest='.($_GET['quest']+1).'">
+		<span class="q_text"><b>[+question+]</b> ([+lang.question+][+num+])</span>
+		<form method="post" action="[+forward_url+]">
 		<ul class="answers">[+answers+]</ul>
 		[+submit+][+over+]
 		</form>
 	</div>';
+	// answer wrapper
 $answContainer = isset($answContainer) ? $modx->getChunk($answContainer) : '[+answers+]';
-
+	// chunck answer tpl
 $answTpl = isset($answTpl) ? $modx->getChunk($answTpl) :'<li><b>[+a_num+])</b><img src="[(site_url)][+img_var+]" width="200">[+answer+]</li>';
-
+	// chunk about test theme
 $aboutTpl = isset($aboutTpl) ? $modx->getChunk($aboutTpl) : '<div class="intro"><h1>[+title+]</h1>[+description+]</div>';
-
+	// show theme info?
 $showThemeInfo = isset($showThemeInfo) ? $showThemeInfo : 1; 
 if($showThemeInfo == 0) $aboutTpl='';
 elseif($showThemeInfo > 1) $aboutTpl='Wrong parameter <b>&showThemeInfo</b>!!! Only 0 or 2';
-
+	// sort 
 $sortBy = isset($sortBy) ? $sortBy : 'id';
 
 $orderBy = isset($orderBy) ? $orderBy : 'ASC';
 
 $display = isset($display) ? $display : 'themes';
+
+	// test id parameter
+$id = isset($id) ? $id : 1;
 
 $sess_id = 0 ? $sess_id : session_id();
 $testTimeDeath = time() + 30 * 60 + 1;
@@ -48,23 +49,16 @@ $dbprefix = $modx->db->config['table_prefix']; //префикс таблиц
 $start_table = $dbprefix."test_started"; //таблица модуля
 $q_table = $dbprefix."test_questions"; //таблица модуля
 $th_table = $dbprefix."test_themes"; //таблица модуля
-//echo $start_table;
 
 $theme = $modx->config['manager_theme']; //тема админки
 $basePath = $modx->config['base_path']; //путь до сайта на сервере
-
-
 
 $path = $modx->config['site_url'].'assets/modules/testing/';
 
 $if_test =  $modx->db->query("SELECT * FROM $start_table WHERE session_id = '$sess_id'");
 // проверка 
-
 $res = $modx->db->getRow($if_test);
 
-$min = isset($min) ? $min :30;
-
-$id = isset($id) ? $id : 1;
 // недоработано
 if ($id == 'rand')
 {
@@ -255,7 +249,7 @@ elseif ($modx->db->getRecordCount($modx->db->query("SELECT * FROM $start_table W
 	$res = $modx->db->getRow($modx->db->query($sql));
 	$title = $res['title'];
 	$description = $res['description'];
-	$container = '[+about_test+]<center><a href="'.$modx->makeUrl($modx->documentIdentifier).'?act=go&quest=1" class="button">'.$lang[10].'</a></center>';
+	$containerTpl = '[+about_test+]<center><a href="'.$modx->makeUrl($modx->documentIdentifier).'?act=go&quest=1" class="button">'.$lang[10].'</a></center>';
 }
 if ($_POST['game_over'])
 {
@@ -391,8 +385,9 @@ if ($_GET['act'] =='end')
 $modx->setPlaceholder('title',$title);
 $modx->setPlaceholder('description',$description);
 $modx->setPlaceholder('about_test',$aboutTpl);
-
+$modx->setPlaceholder('forward_url',$modx->makeUrl($modx->documentIdentifier).'?act=go&quest='.($_GET['quest']+1));
 $modx->setPlaceholder('time',$time);
+$modx->setPlaceholder('lang.question',$lang[0]);
 
 $modx->setPlaceholder('listing',$listingTpl);
 $modx->setPlaceholder('wrapper',$qTpl);
@@ -403,7 +398,7 @@ $modx->setPlaceholder('over',$over);
 
 if ($_GET['act'] == 'end')$qTpl='';
 
-echo $out.$container;
+echo $out.$containerTpl;
 //echo $out;
 //выводим заголовок теста
 ?>
