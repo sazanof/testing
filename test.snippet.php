@@ -17,6 +17,7 @@ $listingTpl = isset($listingTpl) ? $modx->getChunk($listingTpl) : '<div class="q
 $qTpl = isset($qTpl) ? $modx->getChunk($qTpl) : '
 	<div class="quest">
 		<span class="q_text"><b>[+question+]</b> ([+lang.question+][+num+])</span>
+		[+q.img+]
 		<form method="post" action="[+forward_url+]">
 		<ul class="answers">[+answers+]</ul>
 		[+submit+][+over+]
@@ -139,6 +140,7 @@ if ($_GET['act'] =='go' and $_GET['quest'])
 					$res = $modx->db->getRow($modx->db->query($sql));
 					$num = $i+1;
 					$question = $res['question'];
+					$qImg = $res['img'];
 					$answ = $res['json_answ'];
 					$answ = explode('&impl;',$answ);
 					$ii=1;
@@ -198,8 +200,8 @@ if ($_GET['act'] =='go' and $_GET['quest'])
 					}
 					$over = '<input type="submit" name="game_over" value="'.$lang[3].'" class="button">';
 
-					$fields = array('[+num+]','[+question+]','[+answers+]');
-					$replace = array($num,$question,$arr);
+					$fields = array('[+num+]','[+q.img+]','[+question+]','[+answers+]');
+					$replace = array($num,$qImg,$question,$arr);
 					$qTpl = str_replace($fields,$replace,$qTpl);
 				}				
 			$i++;
