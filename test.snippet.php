@@ -313,7 +313,7 @@ if ($_GET['act'] =='end')
 				$results .= '<div style="padding:10px; margin:10px 0; background:#ddd"><h1>'.$row['title'].'</h1>';
 				$results .= str_replace('[+balls+]',$balls,$row['descr']).'</div>';
 				// сравниваем с минимальным допустимым указанным числом баллов
-				if ($balls >= $row['min_balls'])
+				if ($balls >= $it['min_balls'])
 				{
 					$results .= $lang[8];
 				}
@@ -321,7 +321,6 @@ if ($_GET['act'] =='end')
 				{
 					$results .= $lang[9];
 				}
-				
 				
 				$sql = "SELECT * FROM $start_table WHERE session_id = '$sess_id'";
 				$res = $modx->db->getRow($modx->db->query($sql));
