@@ -27,7 +27,7 @@ $qTpl = isset($qTpl) ? $modx->getChunk($qTpl) : '
 	</div>';
 $answContainer = isset($answContainer) ? $modx->getChunk($answContainer) : '[+answers+]';
 
-$answTpl = isset($answTpl) ? $modx->getChunk($answTpl) :'<li><b>[+a_num+])</b> [+answer+]</li>';
+$answTpl = isset($answTpl) ? $modx->getChunk($answTpl) :'<li><b>[+a_num+])</b><img src="[(site_url)][+img_var+]" width="200">[+answer+]</li>';
 
 $aboutTpl = isset($aboutTpl) ? $modx->getChunk($aboutTpl) : '<div class="intro"><h1>[+title+]</h1>[+description+]</div>';
 
@@ -93,16 +93,22 @@ $out ='';
 $out .= ' <link rel="stylesheet" href="'.$path.'css/testing.css" type="text/css" media="screen" />';
 if ($_GET['act'] =='go' and $_GET['quest'])
 {
-	$time = date("Y-m-d H:i",mktime(date("H"),date("i")+$min,0,date("m"),date("d"),date("Y")));
-	//echo date("Y-m-d H:i").' а в БД идет-'.$time.'<br>';
-	if ($modx->db->getRecordCount($modx->db->query("SELECT * FROM $start_table WHERE session_id = '$sess_id'")) == 0)
-	{
-	$modx->db->query("INSERT INTO $start_table VALUES ('NULL','".$modx->db->escape($sess_id)."','".$modx->db->escape($time)."','','','".$modx->db->escape($id)."')");
-	header ('Location:'.$modx->makeUrl($modx->documentIdentifier).'?act=go&quest=1');
+	$sql = "SELECT time FROM $th_table WHERE id = $id";
+	$testI = $modx->db->query($sql);
+	$testI = $modx->db->getRow($testI);
+	// время на тест из бд
+	if($testI['time']>0){
+		$time = date("Y-m-d H:i",mktime(date("H"),date("i")+$testI['time'],0,date("m"),date("d"),date("Y")));
+	
+		if ($modx->db->getRecordCount($modx->db->query("SELECT * FROM $start_table WHERE session_id = '$sess_id'")) == 0)
+		{
+			$modx->db->query("INSERT INTO $start_table VALUES ('NULL','".$modx->db->escape($sess_id)."','".$modx->db->escape($time)."','','','".$modx->db->escape($id)."')");
+			header ('Location:'.$modx->makeUrl($modx->documentIdentifier).'?act=go&quest=1');
+		}
 	}
 	if ($if_test !==0)
 	{ 
-		$time = '';
+		$time = '<SCRIPT language="JavaScript" SRC="/assets/modules/testing/count/countdown.php?countto='.$res['time_death'].'&do=r&data='.$modx->makeUrl($modx->documentIdentifier).'?act=end"></SCRIPT>';
 		$sql = "SELECT * FROM $q_table WHERE id_theme = '$th_id'  ORDER BY $sortBy $orderBy";
 		$res = $modx->db->query($sql);
 		$res = $modx->db->makeArray($res);
@@ -162,6 +168,7 @@ if ($_GET['act'] =='go' and $_GET['quest'])
 						foreach ($answ as $a)
 						{
 								$a = json_decode($a, true);
+								
 								$a_num = $ii;
 								$answer = $a['answer'];
 								$f = array ('[+a_num+]','[+answer+]');
@@ -178,11 +185,14 @@ if ($_GET['act'] =='go' and $_GET['quest'])
 						foreach ($answ as $a)
 						{
 								$a = json_decode($a, true);
+								$a_img = $a['imgs'];
+								//echo $a_img;
+								//print_r($a);
 								$answers[$ii] = $_POST['answ'].',';
 								$a_num = $ii;
 								$answer = '<input type="radio" name="answ" value="'.$a['ball'].'">'.$a['answer'];
-								$f = array ('[+a_num+]','[+answer+]');
-								$r = array ($a_num,$answer);
+								$f = array ('[+a_num+]','[+answer+]','[+img_var+]');
+								$r = array ($a_num,$answer,$a_img);
 								$ans = str_replace ($f,$r,$answTpl);
 								$arr[] = $ans;
 								$ii++;

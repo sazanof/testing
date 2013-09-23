@@ -2,7 +2,7 @@
 /*
 # MODX TESTING MODULE
 # AUTHOR SAZANOF siuzi_drum@mail.ru
-# VERSION 0.1.0
+# VERSION 1.b3
 # 04.04.2013
 
 */
@@ -34,7 +34,7 @@ if(IN_MANAGER_MODE=="true")
 		$title = 'Установка модуля';		
 		$sql = "CREATE TABLE $mod_table (id INT(11) NOT NULL AUTO_INCREMENT, id_theme INT(11),question VARCHAR(255),img VARCHAR(255), json_answ TEXT, correct_answ INT(2), PRIMARY KEY (id))";
 		$modx->db->query($sql);
-		$sql2 = "CREATE TABLE IF NOT EXISTS $mod_table_th ( `id` int(11) NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `description` TEXT NOT NULL, `test_type` INT NOT NULL, PRIMARY KEY (`id`)) ";
+		$sql2 = "CREATE TABLE IF NOT EXISTS $mod_table_th ( `id` int(11) NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `description` TEXT NOT NULL, `test_type` INT NOT NULL, `time` INT NOT NULL, PRIMARY KEY (`id`)) ";
 		$modx->db->query($sql2);		
 		$sql3="CREATE TABLE $start_table (`id` INT(9) NOT NULL AUTO_INCREMENT ,`session_id` VARCHAR(255) NOT NULL ,`time_death` VARCHAR(255) NOT NULL ,`questions_id` TEXT NOT NULL ,`answers` TEXT NOT NULL, `num` INT(9),PRIMARY KEY ( `id` )) ";
 		$modx->db->query($sql3);
@@ -202,8 +202,8 @@ if(IN_MANAGER_MODE=="true")
 		{
 			if($_POST['add_questions'])
 			{
-				$sql = "INSERT INTO $mod_table_th VALUES ('NULL','".$modx->db->escape($_POST['theme_title'])."','".$modx->db->escape($_POST['theme_description'])."','".$modx->db->escape($_POST['test_type'])."')";
-				echo $sql;
+				$sql = "INSERT INTO $mod_table_th VALUES ('NULL','".$modx->db->escape($_POST['theme_title'])."','".$modx->db->escape($_POST['theme_description'])."','".$modx->db->escape($_POST['test_type'])."','".$modx->db->escape($_POST['test_time'])."'";
+				//echo $sql;
 				$modx->db->query($sql);
 				header("Location: index.php?a=112&id=".$_REQUEST['id']." ");
 
@@ -221,6 +221,8 @@ if(IN_MANAGER_MODE=="true")
 				<textarea name="theme_description" placeholder="Введите описание теста"></textarea><br>
 				<input type="radio" name="test_type" value="1"> Проверка знаний (баллы начисляются за правильный ответ)<br>
 				<input type="radio" name="test_type" value="0"> Тестирование (Результат по сумме набранных баллов)<br>
+				<b>Введите время, отведенное для теста в минутах.</b><br>
+				<input type="text" name="test_time" value="0"><br>
 				<input type="submit" name="add_questions" value="Сохранить" class="but"> <input type="reset" value="Назад" onclick="javascript:history.back();" class="but">
 				</form></fieldset>';
 				$out .= $form;
@@ -447,6 +449,8 @@ if(IN_MANAGER_MODE=="true")
 					
 					<fieldset>
 					'.$test_type_checked.'
+					<b>Введите время, отведенное для теста в минутах.</b><br>
+					<input type="text" name="test_time" value="'.$res['time'].'"><br>
 					</fieldset>
 					
 					<fieldset>
@@ -459,6 +463,7 @@ if(IN_MANAGER_MODE=="true")
 					$sql = "UPDATE $mod_table_th SET 
 					title='".$modx->db->escape($_POST['theme_title'])."',
 					test_type='".$modx->db->escape($_POST['test_type'])."',
+					time='".$modx->db->escape(trim($_POST['test_time']))."',
 					description='".$modx->db->escape($_POST['theme_description'])."' WHERE id = '".$res['id']."'";
 					$modx->db->query($sql);
 					header("Location: index.php?a=112&id=".$_REQUEST['id']."&theme_id=".(int)$_GET['theme_id']);
