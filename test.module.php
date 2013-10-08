@@ -125,7 +125,7 @@ if(IN_MANAGER_MODE=="true")
 		{
 			if($_POST['add_questions'])
 			{
-				$sql = "INSERT INTO $mod_table_th VALUES ('NULL','".$modx->db->escape($_POST['theme_title'])."','".$modx->db->escape($_POST['theme_description'])."','".$modx->db->escape($_POST['test_type'])."','".$modx->db->escape($_POST['test_time'])."','0'";
+				$sql = "INSERT INTO $mod_table_th VALUES ('NULL','".$modx->db->escape($_POST['theme_title'])."','".$modx->db->escape($_POST['theme_description'])."','".$modx->db->escape($_POST['test_type'])."','".$modx->db->escape($_POST['test_time'])."','0')";
 				//echo $sql;
 				$modx->db->query($sql);
 				header("Location: index.php?a=112&id=".$_REQUEST['id']." ");
